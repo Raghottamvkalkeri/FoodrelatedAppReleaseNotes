@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Related — Release Runbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1210;
+    --panel: #151B18;
+    --panel-2: #1B2320;
+    --line: #263029;
+    --text: #E9EFEA;
+    --text-dim: #8FA097;
+    --text-faint: #5C6960;
+    --citrus: #FF8A3D;
+    --leaf: #4FCB8C;
+    --leaf-dim: #2C4F3D;
+    --code-bg: #0A0D0B;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+  }
+  a{color:var(--leaf);}
+
+  /* ---------- Layout ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns: 300px 1fr;
+    min-height:100vh;
+  }
+  @media (max-width: 900px){
+    .shell{grid-template-columns: 1fr;}
+    .rail{position:relative; height:auto;}
+  }
+
+  /* ---------- Sidebar / conveyor rail ---------- */
+  .rail{
+    position:sticky; top:0; align-self:start;
+    height:100vh; overflow-y:auto;
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    padding:28px 0 40px;
+  }
+  .rail::-webkit-scrollbar{width:8px;}
+  .rail::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px;}
+
+  .brand{
+    padding:0 24px 22px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:6px;
+  }
+  .brand .mark{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--mono); font-size:12px; letter-spacing:.14em;
+    color:var(--citrus); text-transform:uppercase;
+  }
+  .brand .mark svg{display:block;}
+  .brand h1{
+    font-size:19px; margin:12px 0 4px; font-weight:600; letter-spacing:-.01em;
+  }
+  .brand p{
+    margin:0; font-size:12.5px; color:var(--text-dim);
+  }
+
+  nav.steps{padding:10px 10px 0;}
+  .steps a{
+    position:relative;
+    display:flex; gap:12px; align-items:flex-start;
+    text-decoration:none;
+    padding:11px 12px 11px 10px;
+    border-radius:8px;
+    color:var(--text-dim);
+    font-size:13.5px;
+    margin-bottom:2px;
+  }
+  .steps a:hover{background:var(--panel-2); color:var(--text);}
+  .steps a.active{background:var(--panel-2); color:var(--text);}
+  .steps a.active .num{background:var(--leaf); color:#0B140F; border-color:var(--leaf);}
+  .steps a.active::before{
+    content:""; position:absolute; left:-11px; top:8px; bottom:8px; width:2px;
+    background:var(--leaf); border-radius:2px;
+  }
+  .steps .num{
+    flex:0 0 auto;
+    width:24px; height:24px; border-radius:50%;
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:11px; color:var(--text-faint);
+    margin-top:1px;
+  }
+  .steps .label b{display:block; font-weight:500;}
+  .steps .label span{display:block; font-size:11.5px; color:var(--text-faint); margin-top:1px;}
+  .track{
+    position:absolute; left:34px; top:0; bottom:0; width:1px;
+    background:repeating-linear-gradient(var(--line) 0 4px, transparent 4px 8px);
+  }
+
+  .rail-foot{
+    padding:18px 24px 0; margin-top:14px;
+    border-top:1px solid var(--line);
+    font-size:11.5px; color:var(--text-faint); font-family:var(--mono);
+  }
+
+  /* ---------- Main content ---------- */
+  main{padding: 64px clamp(20px, 5vw, 72px) 120px; max-width:920px;}
+
+  .hero-kicker{
+    font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--citrus); margin-bottom:14px; display:flex; align-items:center; gap:10px;
+  }
+  .hero-kicker::after{content:""; flex:1; height:1px; background:var(--line);}
+  h1.title{
+    font-size:clamp(32px, 4.4vw, 46px); line-height:1.08; margin:0 0 18px; letter-spacing:-.02em; font-weight:700;
+  }
+  .lede{
+    font-size:16.5px; color:var(--text-dim); max-width:62ch; margin:0 0 34px;
+  }
+  .meta-row{
+    display:flex; flex-wrap:wrap; gap:10px; margin-bottom:56px;
+  }
+  .chip{
+    font-family:var(--mono); font-size:11.5px; color:var(--text-dim);
+    border:1px solid var(--line); background:var(--panel);
+    padding:6px 12px; border-radius:100px;
+  }
+  .chip b{color:var(--leaf);}
+
+  section.step{
+    padding-top:52px; margin-top:12px; border-top:1px solid var(--line);
+    scroll-margin-top:24px;
+  }
+  section.step:first-of-type{border-top:none;}
+  .step-head{display:flex; gap:16px; align-items:flex-start; margin-bottom:18px;}
+  .step-index{
+    font-family:var(--mono); font-size:13px; color:var(--leaf);
+    border:1px solid var(--leaf-dim); background:rgba(79,203,140,.08);
+    border-radius:8px; padding:6px 10px; flex:0 0 auto; margin-top:3px;
+  }
+  .step-head h2{font-size:25px; margin:0 0 6px; font-weight:600; letter-spacing:-.01em;}
+  .step-head p.sub{margin:0; color:var(--text-dim); font-size:14.5px;}
+
+  .step-body p{color:#CBD6CF; font-size:15px;}
+  .step-body ul, .step-body ol{color:#CBD6CF; font-size:15px; padding-left:22px;}
+  .step-body li{margin-bottom:6px;}
+
+  .warn{
+    display:flex; gap:10px; align-items:flex-start;
+    background:rgba(255,138,61,.08); border:1px solid rgba(255,138,61,.35);
+    border-radius:10px; padding:14px 16px; margin:18px 0; font-size:13.5px; color:#FFD3B0;
+  }
+  .warn b{color:var(--citrus);}
+
+  figure{margin:22px 0;}
+  figure img{
+    width:100%; display:block; border-radius:10px; border:1px solid var(--line);
+    background:#000;
+  }
+  figcaption{
+    font-family:var(--mono); font-size:12px; color:var(--text-faint);
+    margin-top:9px; padding-left:2px;
+  }
+  .shots{display:grid; grid-template-columns: 1fr 1fr; gap:16px;}
+  @media (max-width:640px){.shots{grid-template-columns:1fr;}}
+
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; overflow-x:auto; font-family:var(--mono); font-size:12.8px;
+    line-height:1.65; margin:18px 0;
+  }
+  code{font-family:var(--mono);}
+  pre .c-key{color:#7FB8E0;}
+  pre .c-str{color:#B7D89A;}
+  pre .c-com{color:var(--text-faint); font-style:italic;}
+  pre .c-fn{color:var(--citrus);}
+  pre .c-num{color:#D0A6E8;}
+
+  .filetree{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
+    padding:18px 20px; font-family:var(--mono); font-size:12.5px; line-height:1.55;
+    color:#AEC2B7; overflow-x:auto; margin:18px 0; white-space:pre;
+  }
+  .filetree .dim{color:var(--text-faint);}
+  .filetree .hl{color:var(--citrus);}
+
+  .video-link{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:var(--mono); font-size:13px; text-decoration:none;
+    color:var(--text); background:var(--panel-2); border:1px solid var(--line);
+    padding:10px 14px; border-radius:8px; margin:6px 8px 0 0;
+  }
+  .video-link:hover{border-color:var(--leaf);}
+  .video-link svg{flex:0 0 auto;}
+
+  .checklist{list-style:none; padding:0; margin:18px 0;}
+  .checklist li{
+    display:flex; gap:11px; align-items:flex-start; margin-bottom:10px; font-size:14.5px; color:#CBD6CF;
+  }
+  .checklist li::before{
+    content:""; width:16px; height:16px; margin-top:3px; flex:0 0 auto;
+    border:1.5px solid var(--leaf-dim); border-radius:5px; background:rgba(79,203,140,.06);
+  }
+
+  .diff{font-family:var(--mono); font-size:13px; margin:16px 0; border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .diff .row{padding:9px 16px; display:flex; gap:10px;}
+  .diff .minus{background:rgba(255,90,90,.08); color:#FFB3B3;}
+  .diff .plus{background:rgba(79,203,140,.09); color:#B7E7CC;}
+
+  footer.end{
+    margin-top:80px; padding-top:28px; border-top:1px solid var(--line);
+    color:var(--text-faint); font-size:12.5px; font-family:var(--mono);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  .backtotop{
+    position:fixed; right:28px; bottom:28px;
+    width:42px; height:42px; border-radius:50%;
+    background:var(--panel-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none; color:var(--text-dim);
+    opacity:0; pointer-events:none; transition:opacity .2s;
+  }
+  .backtotop.show{opacity:1; pointer-events:auto;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============ RAIL / SIDEBAR ============ -->
+  <aside class="rail">
+    <div class="brand">
+      <span class="mark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v4H4zM4 10h10v4H4zM4 16h16v4H4z" fill="currentColor"/></svg>
+        Release Runbook
+      </span>
+      <h1>Food Related App</h1>
+      <p>Dev → Prod release procedure for iOS &amp; Android</p>
+    </div>
+    <nav class="steps" id="steps-nav">
+      <a href="#overview"><span class="num">•</span><span class="label"><b>Overview</b><span>Before you start</span></span></a>
+      <a href="#step-01"><span class="num">01</span><span class="label"><b>Open the project</b><span>Folder structure</span></span></a>
+      <a href="#step-02"><span class="num">02</span><span class="label"><b>Switch environment</b><span>devFR → prodFR</span></span></a>
+      <a href="#step-03"><span class="num">03</span><span class="label"><b>GoogleService-Info</b><span>Swap the plist</span></span></a>
+      <a href="#step-04"><span class="num">04</span><span class="label"><b>Android version</b><span>build.gradle</span></span></a>
+      <a href="#step-05"><span class="num">05</span><span class="label"><b>Keystore</b><span>gradle.properties</span></span></a>
+      <a href="#step-06"><span class="num">06</span><span class="label"><b>Xcode release</b><span>Build → Archive → Distribute</span></span></a>
+      <a href="#step-07"><span class="num">07</span><span class="label"><b>Android release</b><span>Build → Play Console</span></span></a>
+    </nav>
+    <div class="rail-foot">com.foodrelated.release · prod</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main>
+
+    <section id="overview">
+      <div class="hero-kicker">Internal runbook</div>
+      <h1 class="title">Shipping a new build of<br>Food Related.</h1>
+      <p class="lede">A step-by-step walkthrough for cutting a production release of the Food Related app — flipping the environment config, swapping Google service files, bumping version numbers, and pushing the build through Xcode and the Play Console.</p>
+      <div class="meta-row">
+        <span class="chip">Platforms: <b>iOS &amp; Android</b></span>
+        <span class="chip">Stack: <b>React Native</b></span>
+        <span class="chip">Env flip: <b>devFR → prodFR</b></span>
+        <span class="chip">Editor: <b>VS Code</b></span>
+      </div>
+    </section>
+
+    <!-- STEP 01 -->
+    <section class="step" id="step-01">
+      <div class="step-head">
+        <span class="step-index">01</span>
+        <div>
+          <h2>Open the project</h2>
+          <p class="sub">Pick a code editor and get oriented in the app folder</p>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>Open the project in the code editor you're most comfortable in — this runbook uses VS Code. Inside the <code>app</code> folder, navigate to <code>Utils/utils.js</code>, which is where the environment switch for the release lives.</p>
+        <p>For reference, this is the shape of the app folder you'll be working in:</p>
+        <div class="filetree">app
+├─ API
+│  ├─ analyticsErrorLogger.js
+│  ├─ errorHandler.js
+│  ├─ networkAPI.js
+│  └─ paths.js
+├─ Analytics
+├─ AppRoutes
+│  ├─ AppRouter
+│  ├─ GuestRouter
+│  └─ rootRouter.js
+├─ Assets
+│  ├─ fonts
+│  ├─ icons
+│  └─ images
+├─ Constants
+├─ Modules
+│  ├─ Common
+│  ├─ Components
+│  ├─ Screens
+│  └─ Views
+├─ ReduxSrore
+│  ├─ sagas
+│  ├─ slices
+│  └─ store.js
+├─ Static
+│  └─ Images
+└─ <span class="hl">Utils</span>
+   ├─ functions.js
+   ├─ helpers.js
+   └─ <span class="hl">utils.js</span>  <span class="dim">← environment config lives here</span></div>
+      </div>
+    </section>
+
+    <!-- STEP 02 -->
+    <section class="step" id="step-02">
+      <div class="step-head">
+        <span class="step-index">02</span>
+        <div>
+          <h2>Switch the environment</h2>
+          <p class="sub">Flip the active case from <code>devFR</code> to <code>prodFR</code> and bump the version</p>
+        </div>
+      </div>
+      <div class="step-body">
+        <p><code>getKeyValueUrl()</code> in <code>utils.js</code> switches on an environment string to decide which API URL, keys, and app version get baked into the build. Before cutting a release, that switch needs to change from <code>devFR</code> to <code>prodFR</code>, and the version inside the <code>prodFR</code> case needs to be bumped.</p>
+
+        <div class="diff">
+          <div class="row minus">− switch (<span style="color:#FFB3B3">'devFR'</span>) {</div>
+          <div class="row plus">+ switch (<span style="color:#B7E7CC">'prodFR'</span>) {</div>
+        </div>
+
+        <pre><span class="c-key">const</span> <span class="c-fn">getKeyValueUrl</span> = () =&gt; {
+  <span class="c-key">let</span> key, url, value, version, heroku, gSignInWCID;
+
+  <span class="c-com">// change 'devFR' to 'prodFR' to build for production</span>
+  <span class="c-key">switch</span> (<span class="c-str">'prodFR'</span>) {
+
+    <span class="c-key">case</span> <span class="c-str">'prodFR'</span>:
+      url     = <span class="c-str">'https://www.foodrelated.com/'</span>;
+      value   = <span class="c-str">"kPiiX8kNoPEFLCauSAXuaol0UJsxNW/h0S3ZFYMRYm0="</span>;
+      key     = <span class="c-str">"fcca0c3c73eb935ea9e5b80571d16a73"</span>;
+      <span class="c-com">// bump the version — e.g. 1.4.5 → 1.4.6</span>
+      version = <span class="c-str">'1.4.6'</span>;
+      heroku  = <span class="c-str">'https://curbsy.herokuapp.com/reserve/FoodRelatedCurbside/1669183200/13/'</span>;
+      gSignInWCID = <span class="c-str">'265662000436-jgc9nqbp7v565l6qt2c8gdfk6l7b4qsv.apps.googleusercontent.com'</span>;
+      <span class="c-key">break</span>;
+  }
+
+  <span class="c-key">return</span> { key, url, value, version, heroku, gSignInWCID };
+};</pre>
+
+        <ul class="checklist">
+          <li>Switch statement input changed from <code>'devFR'</code> to <code>'prodFR'</code></li>
+          <li>Inside the <code>prodFR</code> case, <code>version</code> incremented (e.g. <code>1.4.5</code> → <code>1.4.6</code>)</li>
+          <li>File saved</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- STEP 03 -->
+    <section class="step" id="step-03">
+      <div class="step-head">
+        <span class="step-index">03</span>
+        <div>
+          <h2>Swap the GoogleService-Info file</h2>
+          <p class="sub">Point the iOS project at the production Firebase config</p>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>The iOS project keeps three <code>GoogleService-Info</code> plists side by side: the active one Xcode actually reads, plus a dev and a prod copy kept in the repo for reference.</p>
+        <div class="filetree">ios
+├─ AppDelegate.mm
+├─ <span class="hl">GoogleService-Info.plist</span>          <span class="dim">← active file Xcode reads</span>
+├─ GoogleServiceDevFR-Info.plist       <span class="dim">dev copy</span>
+├─ GoogleServiceProd-Info.plist        <span class="dim">prod copy</span>
+├─ Podfile
+├─ Podfile.lock
+├─ foodrelatedDevFR-Info.plist
+├─ foodrelatedDevFR.entitlements
+├─ foodrelatedProd-Info.plist
+└─ foodrelatedProd.entitlements</div>
+        <p>Replace <code>GoogleService-Info.plist</code> with a copy of <code>GoogleServiceProd-Info.plist</code> before releasing, so the build ships pointed at production Firebase.</p>
+        <figure>
+          <img src="assets/image3.png" alt="iOS folder listing showing the three GoogleService-Info plist files">
+          <figcaption>ios/ — GoogleService-Info.plist sits alongside the DevFR and Prod copies</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- STEP 04 -->
+    <section class="step" id="step-04">
+      <div class="step-head">
+        <span class="step-index">04</span>
+        <div>
+          <h2>Bump the Android version</h2>
+          <p class="sub">Update <code>versionCode</code> / <code>versionName</code> in <code>build.gradle</code></p>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>Open the <code>android</code> folder inside <code>app</code> and find <code>build.gradle</code>. The <code>production</code> flavor under <code>productFlavors</code> is what ships to the Play Store — increment its version there.</p>
+        <figure>
+          <img src="assets/image16.png" alt="Build output folder tree showing the path down to build.gradle">
+          <figcaption>Locating build.gradle inside android/app</figcaption>
+        </figure>
+        <pre>productFlavors {
+  staging {
+    applicationId <span class="c-str">"com.foodrelated.devFR"</span>
+    versionCode 1
+    versionName <span class="c-str">"1.0"</span>
+    applicationIdSuffix <span class="c-str">".stage"</span>
+  }
+  production {
+    applicationId <span class="c-str">"com.foodrelated.release"</span>
+    <span class="c-com">// increment both together</span>
+    versionCode <span class="c-num">1066</span>
+    versionName <span class="c-str">"1.0.66"</span>
+    applicationIdSuffix <span class="c-str">".prod"</span>
+  }
+}</pre>
+        <div class="diff">
+          <div class="row minus">− versionCode 1065 · versionName "1.0.65"</div>
+          <div class="row plus">+ versionCode 1066 · versionName "1.0.66"</div>
+        </div>
+        <div class="warn">
+          <span>⚠</span>
+          <div><b>Always increment, never reuse.</b> If a build gets rejected in the Play Console, the next upload still needs a new, higher <code>versionCode</code> — the Play Store will not accept a repeat.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 05 -->
+    <section class="step" id="step-05">
+      <div class="step-head">
+        <span class="step-index">05</span>
+        <div>
+          <h2>Point at the release keystore</h2>
+          <p class="sub"><code>gradle.properties</code></p>
+        </div>
+      </div>
+      <div class="step-body">
+        <p>In <code>gradle.properties</code>, comment out the debug signing lines and uncomment the release keystore lines so the production build is signed correctly.</p>
+        <figure>
+          <img src="assets/image13.png" alt="gradle.properties showing debug and release keystore lines">
+          <figcaption>gradle.properties — comment lines 44–45, uncomment lines 47–48</figcaption>
+        </figure>
+        <ul class="checklist">
+          <li>Comment out line 44 and line 45 (debug keystore)</li>
+          <li>Uncomment line 47 and line 48 (release keystore)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- STEP 06 -->
+    <section class="step" id="step-06">
+      <div class="step-head">
+        <span class="step-index">06</span>
+        <div>
+          <h2>Xcode: build, archive, distribute</h2>
+          <p class="sub">Ship the iOS build to TestFlight / App Store Connect</p>
+        </div>
+      </div>
+      <div class="step-body">
+        <ol>
+          <li>Open the project in Xcode — select the <code>.xcworkspace</code> file, not <code>.xcodeproj</code>.</li>
+          <li>Select the <b>FoodrelatedProd</b> scheme, and set the run destination to <b>Any iOS Device (arm64)</b>.</li>
+          <li>Enter the new version in the target's Identity panel and press Enter.</li>
+          <li>Product → <b>Clean Build Folder</b>.</li>
+          <li>Product → <b>Build</b>, and wait for it to complete.</li>
+          <li>Product → <b>Archive</b>, and wait for it to complete.</li>
+          <li>From the Organizer, click <b>Distribute App</b> to send the build to the App Store.</li>
+          <li>Click <b>Validate</b> — once validation passes, the build appears under the TestFlight section in App Store Connect.</li>
+          <li>In the Distribution section, use the <b>+</b> icon to attach the build to a new release version.</li>
+        </ol>
+
+        <div class="shots">
+          <figure><img src="assets/image21.png" alt="Xcode workspace file selection"><figcaption>Open the .xcworkspace, not .xcodeproj</figcaption></figure>
+          <figure><img src="assets/image8.png" alt="Selecting the FoodrelatedProd scheme"><figcaption>Scheme: FoodrelatedProd</figcaption></figure>
+          <figure><img src="assets/image11.png" alt="Selecting Any iOS Device as the run destination"><figcaption>Destination: Any iOS Device (arm64)</figcaption></figure>
+          <figure><img src="assets/image5.png" alt="Entering the release version in Xcode's Identity panel"><figcaption>Set the version in the Identity panel</figcaption></figure>
+          <figure><img src="assets/image4.png" alt="Product menu, Clean Build Folder"><figcaption>Product → Clean Build Folder</figcaption></figure>
+          <figure><img src="assets/image17.png" alt="Xcode build in progress"><figcaption>Build, and wait for it to finish</figcaption></figure>
+          <figure><img src="assets/image15.png" alt="Xcode archive in progress"><figcaption>Product → Archive</figcaption></figure>
+          <figure><img src="assets/image20.png" alt="Distribute App button in the Organizer"><figcaption>Organizer → Distribute App</figcaption></figure>
+          <figure><img src="assets/image2.png" alt="Validated build showing under TestFlight"><figcaption>Validate → build appears under TestFlight</figcaption></figure>
+          <figure><img src="assets/image14.png" alt="Distribution section with add release icon"><figcaption>Distribution → + to add a release version</figcaption></figure>
+        </div>
+        <figure>
+          <img src="assets/image19.png" alt="App Store Connect distribution flow continued">
+          <figcaption>Confirming the release version in App Store Connect</figcaption>
+        </figure>
+
+        <a class="video-link" href="https://drive.google.com/file/d/1EKkyBqTLWy709z2FohJg5c3F-ewyOLf9/view?usp=drive_link" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+          Watch: AddIOS.mov
+        </a>
+      </div>
+    </section>
+
+    <!-- STEP 07 -->
+    <section class="step" id="step-07">
+      <div class="step-head">
+        <span class="step-index">07</span>
+        <div>
+          <h2>Android: build &amp; publish</h2>
+          <p class="sub">Generate the .aab and roll it out in the Play Console</p>
+        </div>
+      </div>
+      <div class="step-body">
+        <ol>
+          <li>In Android Studio, select the <b>Food Related</b> run configuration — <code>com.foodrelated.release.prod</code>.</li>
+          <li>In the code editor's terminal, run the production build command:</li>
+        </ol>
+        <pre><span class="c-fn">yarn</span> android-prod-release</pre>
+        <p>Once the build finishes, open the output folder and grab the generated <code>.aab</code> bundle.</p>
+
+        <div class="shots">
+          <figure><img src="assets/image6.png" alt="Selecting the production run configuration in Android Studio"><figcaption>Run config: com.foodrelated.release.prod</figcaption></figure>
+          <figure><img src="assets/image18.png" alt="Android Studio build configuration continued"><figcaption>Confirming the production flavor</figcaption></figure>
+          <figure><img src="assets/image7.png" alt="Build output folder containing the generated .aab file"><figcaption>Build output — locate the .aab file</figcaption></figure>
+          <figure><img src="assets/image9.png" alt="AAB bundle output folder"><figcaption>The generated Android App Bundle</figcaption></figure>
+        </div>
+        <figure>
+          <img src="assets/image10.png" alt="Android build output continued">
+          <figcaption>Build artifacts ready for upload</figcaption>
+        </figure>
+
+        <ol start="3">
+          <li>In the Play Console, go to <b>Test and release → Production</b> and click <b>New release</b>.</li>
+          <li>Upload the <code>.aab</code> bundle.</li>
+          <li>Add the release notes and click <b>Next</b>.</li>
+        </ol>
+        <div class="shots">
+          <figure><img src="assets/image1.png" alt="Play Console new release screen under Production"><figcaption>Test and release → Production → New release</figcaption></figure>
+          <figure><img src="assets/image12.png" alt="Uploading the app bundle in the Play Console"><figcaption>Upload the bundle, then add release notes</figcaption></figure>
+        </div>
+
+        <div>
+          <a class="video-link" href="https://drive.google.com/file/d/1D_Vc_cYGKGmKzckQHjS5E_gHhlok4FHd/view?usp=drive_link" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            Watch: AndroidIOSRelease.mov
+          </a>
+          <a class="video-link" href="https://drive.google.com/file/d/1HW_VolDm6YIRmCBEHOjorjE3LTZbURhc/view?usp=drive_link" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
+            Watch: androidplayconsolevideo.mov
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="end">
+      <span>Food Related — internal release runbook</span>
+      <span>Converted from the release notes doc</span>
+    </footer>
+
+  </main>
+</div>
+
+<a href="#overview" class="backtotop" id="backtotop" aria-label="Back to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</a>
+
+<script>
+  // Active-link highlighting on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.steps a');
+  const backtotop = document.getElementById('backtotop');
+
+  function onScroll(){
+    let current = sections[0]?.id;
+    const y = window.scrollY + 120;
+    sections.forEach(sec => {
+      if (sec.offsetTop <= y) current = sec.id;
+    });
+    links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current));
+    backtotop.classList.toggle('show', window.scrollY > 500);
+  }
+  document.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+</script>
+
+</body>
+</html>
