@@ -74,8 +74,8 @@ const getKeyValueUrl = () => {
 
     case 'prodFR':
       url     = 'https://www.foodrelated.com/';
-      value   = "kPiiX8kNoPEFLCauSAXuaol0UJsxNW/h0S3ZFYMRYm0=";
-      key     = "fcca0c3c73eb935ea9e5b80571d16a73";
+      value   = "dummykeyvalue";
+      key     = "dummykey";
       // bump the version — e.g. 1.4.5 → 1.4.6
       version = '1.4.6';
       heroku  = 'https://curbsy.herokuapp.com/reserve/FoodRelatedCurbside/1669183200/13/';
