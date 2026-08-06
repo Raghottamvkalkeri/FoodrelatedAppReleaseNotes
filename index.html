@@ -389,7 +389,7 @@
 └─ foodrelatedProd.entitlements</div>
         <p>Replace <code>GoogleService-Info.plist</code> with a copy of <code>GoogleServiceProd-Info.plist</code> before releasing, so the build ships pointed at production Firebase.</p>
         <figure>
-          <img src="assets/image3.png" alt="iOS folder listing showing the three GoogleService-Info plist files">
+          <img src="assets/image3.jpg" alt="iOS folder listing showing the three GoogleService-Info plist files">
           <figcaption>ios/ — GoogleService-Info.plist sits alongside the DevFR and Prod copies</figcaption>
         </figure>
       </div>
@@ -407,7 +407,7 @@
       <div class="step-body">
         <p>Open the <code>android</code> folder inside <code>app</code> and find <code>build.gradle</code>. The <code>production</code> flavor under <code>productFlavors</code> is what ships to the Play Store — increment its version there.</p>
         <figure>
-          <img src="assets/image16.png" alt="Build output folder tree showing the path down to build.gradle">
+          <img src="assets/image16.jpg" alt="Build output folder tree showing the path down to build.gradle">
           <figcaption>Locating build.gradle inside android/app</figcaption>
         </figure>
         <pre>productFlavors {
@@ -448,7 +448,7 @@
       <div class="step-body">
         <p>In <code>gradle.properties</code>, comment out the debug signing lines and uncomment the release keystore lines so the production build is signed correctly.</p>
         <figure>
-          <img src="assets/image13.png" alt="gradle.properties showing debug and release keystore lines">
+          <img src="assets/image13.jpg" alt="gradle.properties showing debug and release keystore lines">
           <figcaption>gradle.properties — comment lines 44–45, uncomment lines 47–48</figcaption>
         </figure>
         <ul class="checklist">
@@ -481,19 +481,19 @@
         </ol>
 
         <div class="shots">
-          <figure><img src="assets/image21.png" alt="Xcode workspace file selection"><figcaption>Open the .xcworkspace, not .xcodeproj</figcaption></figure>
-          <figure><img src="assets/image8.png" alt="Selecting the FoodrelatedProd scheme"><figcaption>Scheme: FoodrelatedProd</figcaption></figure>
-          <figure><img src="assets/image11.png" alt="Selecting Any iOS Device as the run destination"><figcaption>Destination: Any iOS Device (arm64)</figcaption></figure>
-          <figure><img src="assets/image5.png" alt="Entering the release version in Xcode's Identity panel"><figcaption>Set the version in the Identity panel</figcaption></figure>
-          <figure><img src="assets/image4.png" alt="Product menu, Clean Build Folder"><figcaption>Product → Clean Build Folder</figcaption></figure>
-          <figure><img src="assets/image17.png" alt="Xcode build in progress"><figcaption>Build, and wait for it to finish</figcaption></figure>
-          <figure><img src="assets/image15.png" alt="Xcode archive in progress"><figcaption>Product → Archive</figcaption></figure>
-          <figure><img src="assets/image20.png" alt="Distribute App button in the Organizer"><figcaption>Organizer → Distribute App</figcaption></figure>
-          <figure><img src="assets/image2.png" alt="Validated build showing under TestFlight"><figcaption>Validate → build appears under TestFlight</figcaption></figure>
-          <figure><img src="assets/image14.png" alt="Distribution section with add release icon"><figcaption>Distribution → + to add a release version</figcaption></figure>
+          <figure><img src="assets/image21.jpg" alt="Xcode workspace file selection"><figcaption>Open the .xcworkspace, not .xcodeproj</figcaption></figure>
+          <figure><img src="assets/image8.jpg" alt="Selecting the FoodrelatedProd scheme"><figcaption>Scheme: FoodrelatedProd</figcaption></figure>
+          <figure><img src="assets/image11.jpg" alt="Selecting Any iOS Device as the run destination"><figcaption>Destination: Any iOS Device (arm64)</figcaption></figure>
+          <figure><img src="assets/image5.jpg" alt="Entering the release version in Xcode's Identity panel"><figcaption>Set the version in the Identity panel</figcaption></figure>
+          <figure><img src="assets/image4.jpg" alt="Product menu, Clean Build Folder"><figcaption>Product → Clean Build Folder</figcaption></figure>
+          <figure><img src="assets/image17.jpg" alt="Xcode build in progress"><figcaption>Build, and wait for it to finish</figcaption></figure>
+          <figure><img src="assets/image15.jpg" alt="Xcode archive in progress"><figcaption>Product → Archive</figcaption></figure>
+          <figure><img src="assets/image20.jpg" alt="Distribute App button in the Organizer"><figcaption>Organizer → Distribute App</figcaption></figure>
+          <figure><img src="assets/image2.jpg" alt="Validated build showing under TestFlight"><figcaption>Validate → build appears under TestFlight</figcaption></figure>
+          <figure><img src="assets/image14.jpg" alt="Distribution section with add release icon"><figcaption>Distribution → + to add a release version</figcaption></figure>
         </div>
         <figure>
-          <img src="assets/image19.png" alt="App Store Connect distribution flow continued">
+          <img src="assets/image19.jpg" alt="App Store Connect distribution flow continued">
           <figcaption>Confirming the release version in App Store Connect</figcaption>
         </figure>
 
@@ -522,13 +522,13 @@
         <p>Once the build finishes, open the output folder and grab the generated <code>.aab</code> bundle.</p>
 
         <div class="shots">
-          <figure><img src="assets/image6.png" alt="Selecting the production run configuration in Android Studio"><figcaption>Run config: com.foodrelated.release.prod</figcaption></figure>
-          <figure><img src="assets/image18.png" alt="Android Studio build configuration continued"><figcaption>Confirming the production flavor</figcaption></figure>
-          <figure><img src="assets/image7.png" alt="Build output folder containing the generated .aab file"><figcaption>Build output — locate the .aab file</figcaption></figure>
-          <figure><img src="assets/image9.png" alt="AAB bundle output folder"><figcaption>The generated Android App Bundle</figcaption></figure>
+          <figure><img src="assets/image6.jpg" alt="Selecting the production run configuration in Android Studio"><figcaption>Run config: com.foodrelated.release.prod</figcaption></figure>
+          <figure><img src="assets/image18.jpg" alt="Android Studio build configuration continued"><figcaption>Confirming the production flavor</figcaption></figure>
+          <figure><img src="assets/image7.jpg" alt="Build output folder containing the generated .aab file"><figcaption>Build output — locate the .aab file</figcaption></figure>
+          <figure><img src="assets/image9.jpg" alt="AAB bundle output folder"><figcaption>The generated Android App Bundle</figcaption></figure>
         </div>
         <figure>
-          <img src="assets/image10.png" alt="Android build output continued">
+          <img src="assets/image10.jpg" alt="Android build output continued">
           <figcaption>Build artifacts ready for upload</figcaption>
         </figure>
 
@@ -538,8 +538,8 @@
           <li>Add the release notes and click <b>Next</b>.</li>
         </ol>
         <div class="shots">
-          <figure><img src="assets/image1.png" alt="Play Console new release screen under Production"><figcaption>Test and release → Production → New release</figcaption></figure>
-          <figure><img src="assets/image12.png" alt="Uploading the app bundle in the Play Console"><figcaption>Upload the bundle, then add release notes</figcaption></figure>
+          <figure><img src="assets/image1.jpg" alt="Play Console new release screen under Production"><figcaption>Test and release → Production → New release</figcaption></figure>
+          <figure><img src="assets/image12.jpg" alt="Uploading the app bundle in the Play Console"><figcaption>Upload the bundle, then add release notes</figcaption></figure>
         </div>
 
         <div>
